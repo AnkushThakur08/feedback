@@ -3,6 +3,7 @@ const db = require("../dbConnection");
 const { Sequelize } = require("sequelize");
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
+var { expressjwt: expressjwt } = require("express-jwt");
 
 const User = db.user;
 
@@ -31,7 +32,6 @@ exports.signup = async (req, res) => {
     console.log(hashPassword);
 
     const data = await User.create({
-      id: req.body.id,
       name: req.body.name,
       email: req.body.email,
       password: hashPassword,
@@ -41,9 +41,9 @@ exports.signup = async (req, res) => {
         console.log("Record Entered");
         res.status(200).json({ msg: "User Added Successfully!!" });
       })
-      .catch((err) => {
-        console.log(`Unable to Store the user  ${err}`);
-        res.status(400).json({ msg: `Unable to Store the User  ${err}` });
+      .catch((error) => {
+        console.log(`Unable to Store the user  ${error}`);
+        res.status(400).json({ msg: `Unable to Store the User  ${error}` });
       });
   }
 };
@@ -66,17 +66,63 @@ exports.signIn = async (req, res) => {
     console.log(isMatch);
     if (findUser.email && isMatch) {
       // Token generation
-      const token = jwt.sign({ email: findUser.email }, process.env.SECRET);
+      const token = jwt.sign({ id: findUser.id }, process.env.SECRET);
       console.log(token);
 
       // Put token into cookie
       res.cookie("token", token, { expire: new Date() + 9999 });
 
       // Sending Response to FrontEnd
-      const { name, email, role } = findUser;
-      res.status(200).json({ token, findUser: { name, email, role } });
+      const { id, name, email, role } = findUser;
+      res.status(200).json({ token, findUser: { id, name, email, role } });
     } else {
       res.status(200).json({ msg: "Credentials are invalid" });
     }
   }
+};
+
+// PARAMS
+exports.getById = (req, res, next, id) => {
+  const data = User.findByPk(id).then((data) => {
+    req.profile = data;
+    next();
+  });
+};
+
+exports.getUser = async (req, res) => {
+  return res.json(req.profile);
+};
+
+exports.admin = async (req, res) => {
+  res.status(200).json({ msg: `WELCOME ADMIN` });
+};
+
+// Protected Routes
+exports.isSignedIn = expressjwt({
+  secret: process.env.SECRET,
+  algorithms: ["HS256"],
+  userProperty: "auth", //This auth contents id of the user (res.json(req.auth))
+  /* THIS WILL PUT THIS AUTH, inside every route */
+});
+
+// MIDDLEWARES
+exports.isAuthenticated = (req, res, next) => {
+  let checker = req.profile && req.auth && req.profile.id == req.auth.id;
+  if (!checker) {
+    return res.status(403).json({
+      error: "ACCESS DENIED",
+    });
+  }
+  next();
+};
+
+exports.isAdmin = (req, res, next) => {
+  // console.log(req);
+  console.log(req.profile);
+  if (req.profile.role == 0) {
+    return res.status(403).json({
+      error: "You are NOT ADMIN, ACCESS DENIED",
+    });
+  }
+  next();
 };

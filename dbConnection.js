@@ -3,6 +3,7 @@ const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = new Sequelize("feedback", "root", "123456", {
   host: "localhost",
   dialect: "mysql",
+  logging: false,
 });
 
 sequelize
