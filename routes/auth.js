@@ -10,26 +10,18 @@ const {
   admin,
   isAuthenticated,
   isAdmin,
-  getById,
-  getUser,
+  getUserById,
 } = require("../controllers/auth");
 
 router.param(
-  "adminId",
-  getById
+  "userId",
+  getUserById
 ); /* This will populate req.profile in every route*/
 
 router.post("/signup", signup);
 
 router.post("/signIn", signIn);
 
-router.get("/Admin/:adminId", isSignedIn, isAuthenticated, isAdmin, admin);
-
-router.get("/user/:adminId", getUser);
-
-router.get("/admin1/:adminId", isAuthenticated, (req, res) => {
-  res.json(req.profile);
-});
-// router.get("/Admin/", isSignedIn, isAdmin, admin);
+router.get("/Admin/:userId", isSignedIn, isAuthenticated, isAdmin, admin);
 
 module.exports = router;

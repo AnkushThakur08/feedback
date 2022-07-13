@@ -81,7 +81,7 @@ db.feedback.belongsTo(db.user, {
   foreignKey: "userId",
 });
 
-exports.deleteFeedback = async (req, res) => {
+exports.softdeleteFeedback = async (req, res) => {
   const data = await Feedback.destroy({
     where: {
       id: req.body.id,
@@ -142,3 +142,16 @@ exports.filterRating = async (req, res) => {
     });
 };
 
+exports.deleteFeedback = async (req, res) => {
+  const data = await Feedback.destroy({
+    where: {
+      id: req.body.id,
+    },
+  })
+    .then(() => {
+      res.status(200).json({ msg: `Feedback deleted successfully` });
+    })
+    .catch((error) => {
+      res.status(400).json({ msg: `Unable to delete the feedback ${error}` });
+    });
+};

@@ -6,24 +6,56 @@ const {
   createFeedback,
   getAllFeedback,
   getIndividualFeedback,
-  deleteFeedback,
+  softdeleteFeedback,
   getImportantFeedback,
   filterComment,
   filterRating,
+  deleteFeedback,
 } = require("../controllers/feedback");
 
-router.post("/createFeedback", createFeedback);
+const {
+  isSignedIn,
+  isAuthenticated,
+  isAdmin,
+  getUserById,
+} = require("../controllers/auth");
+
+router.param(
+  "userId",
+  getUserById
+); /* This will populate req.profile in every route*/
+
+router.post(
+  "/createFeedback/:userId",
+  isSignedIn,
+  isAuthenticated,
+  createFeedback
+);
 
 router.get("/getAllFeedback", getAllFeedback);
 
 router.get("/getIndividualFeedback", getIndividualFeedback);
 
-router.delete("/deleteFeedback", deleteFeedback);
+router.delete(
+  "/deleteFeedback",
+  isSignedIn,
+  isAuthenticated,
+  isAdmin,
+  softdeleteFeedback
+);
 
 router.get("/getImportantFeedback", getImportantFeedback);
 
 router.get("/filterComment", filterComment);
 
 router.get("/filterRating", filterRating);
+
+router.delete(
+  "/deleteFeedback/:userId",
+  isSignedIn,
+  isAuthenticated,
+  isAdmin,
+  deleteFeedback
+);
 
 module.exports = router;

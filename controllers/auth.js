@@ -82,13 +82,14 @@ exports.signIn = async (req, res) => {
 };
 
 // PARAMS
-exports.getById = (req, res, next, id) => {
+exports.getUserById = (req, res, next, id) => {
   const data = User.findByPk(id).then((data) => {
     req.profile = data;
     next();
   });
 };
 
+/* TODO: TESTING ROUTES */
 exports.getUser = async (req, res) => {
   return res.json(req.profile);
 };
@@ -96,6 +97,8 @@ exports.getUser = async (req, res) => {
 exports.admin = async (req, res) => {
   res.status(200).json({ msg: `WELCOME ADMIN` });
 };
+
+/*TODO:  TESTING ROUTES */
 
 // Protected Routes
 exports.isSignedIn = expressjwt({
