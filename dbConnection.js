@@ -20,8 +20,17 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.user = require("./models/user")(sequelize, DataTypes);
+db.feedback = require("./models/feedback")(sequelize, DataTypes);
 
-db.sequelize.sync().then(() => {
+// RELATION;
+db.user.hasOne(db.feedback, {
+  foreignKey: "userId",
+});
+db.feedback.belongsTo(db.user, {
+  foreignKey: "userId",
+});
+
+db.sequelize.sync({ alter: true }).then(() => {
   console.log(`Successfully SYNCED!!`);
 });
 
