@@ -1,0 +1,387 @@
+openapi: 3.0.0
+info:
+  title: Learn Swagger with NodeJS - Ankush Thakur
+  description: Let's learn swagger with NodeJS
+  version: 1.0.1
+
+# servers:
+#   - url: http://localhost:8000/api/v1
+#     description: Local Host v1
+#   - url: https://localhost:8000/api/v1
+#     description: Local Host v1 - Secure with HTTPS
+
+servers:
+  - url: "{protocol}://localhost:8000/api/{version}"
+    description: local host {version}
+    variables:
+      version:
+        enum:
+          - v1
+          - v2
+        default: v1
+      protocol:
+        enum:
+          - http
+          - https
+        default: http
+
+# For Token and Authorization headers
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+paths:
+  /getAllFeedback:
+    get:
+      tags:
+        - Feedback
+      summary: Returns a array of Object
+      description: Return Object inside the array
+      responses:
+        200: # Status Code
+          description: All Good - Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    FeedbackInfo:
+                      type: string
+                    comment:
+                      type: string
+                    rating:
+                      type: string
+                    userId:
+                      type: string
+                    createdAt:
+                      type: datetime
+                    updatedAt:
+                      type: datetime
+                    deletedAt:
+                      type: datetime
+        400:
+          description: All Bad - Bad Request
+        500:
+          description: Internal Server Error
+
+  /getImportantFeedback:
+    get:
+      tags:
+        - Questions
+      summary: List all the feedbacks of app that are given by users, but are not deleted, alongwith count of feedbacks (Q1)
+      description: Return all the feedbacks of app that are given by users, but are not deleted, along with count of feedbacks (Q1)
+      responses:
+        200: # Status Code
+          description: All Good - Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                      rows:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            FeedbackInfo:
+                              type: string
+                            comment:
+                              type: string
+                            rating:
+                              type: string
+                            userId:
+                              type: string
+                            createdAt:
+                              type: datetime
+                            updatedAt:
+                              type: datetime
+                            deletedAt:
+                              type: datetime
+        400:
+          description: All Bad - Bad Request
+        500:
+          description: Internal Server Error
+
+  /Admin/{userId}:
+    get:
+      tags:
+        - User
+      summary: returs a String for ADMIN
+      parameters:
+        - name: userId
+          in: path
+          default: c0f94135-3d10-4c29-9808-79ee8d47b017
+          required: true
+          schema:
+            type: string
+      description: Router Visible to Admin only
+      responses:
+        200: # Status Code
+          description: All Good - Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+        400:
+          description: All Bad - Bad Request
+        500:
+          description: Internal Server Error
+
+  /signup:
+    post:
+      tags:
+        - User
+      summary: Add a New User
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      description: Returns a Success Message
+      responses:
+        200: # Status Code
+          description: All Good - Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+        400:
+          description: All Bad - Bad Request
+        500:
+          description: Internal Server Error
+
+  /signin:
+    post:
+      tags:
+        - User
+      summary: LogIn th user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      description: Returns the user Object
+      responses:
+        200: # Status Code
+          description: All Good - Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  findUser:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      email:
+                        type: string
+                      role:
+                        type: integer
+        400:
+          description: All Bad - Bad Request
+        500:
+          description: Internal Server Error
+
+  /getIndividualFeedback:
+    post:
+      tags:
+        - Questions
+      summary: Get details of a particular feedback alongwith rating and information user who have given feedback (Q2)
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: 3da9c4dd-551c-4551-91fa-f6706334b149
+      description: Returns the Information of particular feedback alongwith rating and information user who have given feedback (Q2)
+      responses:
+        200: # Status Code
+          description: All Good - Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  FeedbackInfo:
+                    type: string
+                  comment:
+                    type: string
+                  rating:
+                    type: string
+                  User:
+                    type: object
+                    properties:
+                      User_Name:
+                        type: string
+                      User_Email:
+                        type: string
+        400:
+          description: All Bad - Bad Request
+        500:
+          description: Internal Server Error
+
+  /filterComment:
+    post:
+      tags:
+        - Questions
+      summary: List all the feedbacks of app that are given by users, but are not deleted, alongwith count of feedbacks. And also we can filter feedback by comment (Q1 with Commentfilter)
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                  example: Positive
+      description: List all the feedbacks of app that are given by users, but are not deleted, alongwith count of feedbacks. And also we can filter feedback by comment (Q1 wuth Ratingfilter)
+      responses:
+        200: # Status Code
+          description: All Good - Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                      rows:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            FeedbackInfo:
+                              type: string
+                            comment:
+                              type: string
+                            rating:
+                              type: string
+                            userId:
+                              type: string
+        400:
+          description: All Bad - Bad Request
+        500:
+          description: Internal Server Error
+
+  /filterRating:
+    post:
+      tags:
+        - Questions
+      summary: List all the feedbacks of app that are given by users, but are not deleted, alongwith count of feedbacks. And also we can filter feedback by Rating (Q1 with Ratingfilter)
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: string
+                  example: 5 star
+      description: List all the feedbacks of app that are given by users, but are not deleted, alongwith count of feedbacks. And also we can filter feedback by Rating (Q1 wuth Ratingfilter)
+      responses:
+        200: # Status Code
+          description: All Good - Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                      rows:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            FeedbackInfo:
+                              type: string
+                            comment:
+                              type: string
+                            rating:
+                              type: string
+                            userId:
+                              type: string
+        400:
+          description: All Bad - Bad Request
+        500:
+          description: Internal Server Error

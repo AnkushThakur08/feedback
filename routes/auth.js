@@ -22,6 +22,6 @@ router.post("/signup", signup);
 
 router.post("/signIn", signIn);
 
-router.get("/Admin/:userId", isSignedIn, isAuthenticated, isAdmin, admin);
+router.get("/Admin/:userId", isSignedIn, isAuthenticated, isAdmin, admin); /* TODO: NOT IN SWAGGER */
 
 module.exports = router;

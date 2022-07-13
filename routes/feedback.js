@@ -30,11 +30,11 @@ router.post(
   isSignedIn,
   isAuthenticated,
   createFeedback
-);
+); /* NOT IN SWAGGER */
 
 router.get("/getAllFeedback", getAllFeedback);
 
-router.get("/getIndividualFeedback", getIndividualFeedback);
+router.post("/getIndividualFeedback", getIndividualFeedback);
 
 router.delete(
   "/deleteFeedback",
@@ -42,13 +42,13 @@ router.delete(
   isAuthenticated,
   isAdmin,
   softdeleteFeedback
-);
+); /* TODO: NOT IN SWAGGER */
 
 router.get("/getImportantFeedback", getImportantFeedback);
 
-router.get("/filterComment", filterComment);
+router.post("/filterComment", filterComment);
 
-router.get("/filterRating", filterRating);
+router.post("/filterRating", filterRating);
 
 router.delete(
   "/deleteFeedback/:userId",
@@ -56,6 +56,6 @@ router.delete(
   isAuthenticated,
   isAdmin,
   deleteFeedback
-);
+); /* TODO: */
 
 module.exports = router;
